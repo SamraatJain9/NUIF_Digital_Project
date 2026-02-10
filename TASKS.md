@@ -26,4 +26,6 @@ Currently stored in the yyyy/mm/dd format. How can we simplify this from a data 
 
 ### 5. Phone Number entry problem:
 
-Currently must be entered as '+44 7000 111111, so that the google sheet does not think it's a formula. Is there a way to avoid adding that ' symbol before for this to still work? 
+Currently must be entered as '+44 7000 111111, so that the google sheet does not think it's a formula. Is there a way to avoid adding that ' symbol before for this to still work?
+
+Happy Coding! Do let me know if there are any questions.

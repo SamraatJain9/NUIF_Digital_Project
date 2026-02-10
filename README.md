@@ -77,3 +77,7 @@ function onOpen() {
 - The scripts rely on the spreadsheet timezone to determine “today,” so all triggers and date calculations are consistent regardless of the user’s local timezone.
 - rolodex.js is safe for large datasets due to batching and caching.
 - sheetSetup.js is idempotent: running it multiple times will overwrite the header row without affecting existing data below row 1.
+
+### Authors
+Samraat Jain
+Add your names here too 
