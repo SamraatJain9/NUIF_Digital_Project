@@ -71,7 +71,7 @@ function setupSheet() {
 
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu("🔔 Reminders")
+    .createMenu("🔔 Setup")
     .addItem("Setup sheet", "setupSheet")
     .addToUi();
 }
