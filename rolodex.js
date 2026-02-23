@@ -1,5 +1,5 @@
 /*
-  Author(s): Samraat Jain, James Delin
+  Authors: Samraat Jain, James Delin, Sarah Rafiepour, Ryan Duong, Shalom Ademuwagun
   Version: // A Rolodex Script v1.5 — 2026-02-15
   This script:
   - Automatically sets up the sheet with the necessary headers and formatting for A Rolodex Script.
