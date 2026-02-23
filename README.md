@@ -79,5 +79,4 @@ function onOpen() {
 - sheetSetup.js is idempotent: running it multiple times will overwrite the header row without affecting existing data below row 1.
 
 ### Authors
-Samraat Jain
-Add your names here too 
+[Samraat Jain](https://github.com/SamraatJain9), [James Delin](https://github.com/jd-0001), [Sarah Rafiepour](https://github.com/sarahr15), [Ryan Duong](https://github.com/RyanDuong0), [Shalom Ademuwagun](https://github.com/ChachyDev)
