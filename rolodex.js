@@ -68,12 +68,27 @@ function setupSheet() {
       Session.getEffectiveUser().getEmail()
   );
   sheet.getRange("U2").setValue(9);
+  applyDateFieldFormatting(sheet);
 
   SpreadsheetApp.getActiveSpreadsheet().toast(
       "Setup complete ✔ Sheet initialized and formatted."
   );
 }
 
+function applyDateFieldFormatting(sheet) {
+  var dateRanges = ["L2:L", "N2:N", "O2:O", "R2:R"];
+  var dateRule = SpreadsheetApp.newDataValidation()
+      .requireDate()
+      .setAllowInvalid(false)
+      .setHelpText("Enter a valid date (yyyy/MM/dd)")
+      .build();
+
+  dateRanges.forEach(function (a1) {
+    var range = sheet.getRange(a1);
+    range.setNumberFormat("yyyy/MM/dd");
+    range.setDataValidation(dateRule);
+  });
+}
 function sendReminders(batchStart) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = sheet.getDataRange().getValues();
