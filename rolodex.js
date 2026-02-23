@@ -1,6 +1,6 @@
 /*
   Authors: Samraat Jain, James Delin, Sarah Rafiepour, Ryan Duong, Shalom Ademuwagun
-  Version: // A Rolodex Script v1.5 — 2026-02-15
+  Version: // A Rolodex Script v1.6 — 2026-02-23
   This script:
   - Automatically sets up the sheet with the necessary headers and formatting for A Rolodex Script.
   - Reads your contact sheet.
