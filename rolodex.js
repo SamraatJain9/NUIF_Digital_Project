@@ -14,60 +14,36 @@ function setupSheet() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
   var headers = [
-    "Name",
-    "Email",
-    "Phone Number",
-    "LinkedIn",
-    "Company",
-    "Title",
-    "Industry",
-    "Country of Residence",
-    "City",
-    "Timezone",
-    "Religion",
-    "Birthday",
-    "Holidays",
-    "Last Interaction",
-    "Last Meeting",
-    "Touch Interval (Quater)",
-    "Last Conversation Notes",
-    "Anniversary",
-    "",
-    "Recipient Email",
-    "Trigger hour (0–23)"
+    "Name","Email","Phone Number","LinkedIn","Company","Title","Industry",
+    "Country of Residence","City","Timezone","Religion","Birthday","Holidays",
+    "Last Interaction","Last Meeting","Touch Interval (Quater)",
+    "Last Conversation Notes","Anniversary","",
+    "Recipient Email","Trigger hour (0–23)"
   ];
 
-  // Ensure enough columns exist
   var requiredCols = headers.length;
   var currentCols = sheet.getMaxColumns();
   if (currentCols < requiredCols) {
     sheet.insertColumnsAfter(currentCols, requiredCols - currentCols);
   }
 
-  // Write headers
   var headerRange = sheet.getRange(1, 1, 1, requiredCols);
   headerRange.setValues([headers]);
 
-  // Formatting
   headerRange
       .setFontWeight("bold")
       .setFontColor("#FFFFFF")
-      .setBackground("#1155cc") // Navy blue
+      .setBackground("#1155cc")
       .setHorizontalAlignment("center")
       .setVerticalAlignment("middle");
 
-  // Freeze header row
   sheet.setFrozenRows(1);
-
-  // Optional column widths (clean layout)
   sheet.setColumnWidths(1, requiredCols, 150);
-  sheet.setColumnWidth(17, 300); // Notes column wider
+  sheet.setColumnWidth(17, 300);
 
-  // Default values
-  sheet.getRange("T2").setValue(
-      Session.getEffectiveUser().getEmail()
-  );
+  sheet.getRange("T2").setValue(Session.getEffectiveUser().getEmail());
   sheet.getRange("U2").setValue(9);
+
   applyDateFieldFormatting(sheet);
 
   SpreadsheetApp.getActiveSpreadsheet().toast(
@@ -89,6 +65,7 @@ function applyDateFieldFormatting(sheet) {
     range.setDataValidation(dateRule);
   });
 }
+
 function sendReminders(batchStart) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = sheet.getDataRange().getValues();
@@ -98,13 +75,10 @@ function sendReminders(batchStart) {
       sheet.getRange("T2").getValue() ||
       Session.getEffectiveUser().getEmail();
 
-  // Use spreadsheet timezone as single source of truth
-  var TZ = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
-
-  // "Today" as a pure calendar date in spreadsheet timezone
-  var today = new Date(
-      Utilities.formatDate(new Date(), TZ, "yyyy/MM/dd")
-  );
+  var today = new Date();
+  var todayMonth = today.getMonth();
+  var todayDate = today.getDate();
+  var todayFull = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
   var nameCol = headers.indexOf("Name");
   var emailCol = headers.indexOf("Email");
@@ -135,43 +109,14 @@ function sendReminders(batchStart) {
         .replace(/'/g, "&#039;");
   }
 
-  function parseSheetDate(value) {
-    if (!value) return null;
-    if (value instanceof Date) {
-      return new Date(
-          Utilities.formatDate(value, TZ, "yyyy/MM/dd")
-      );
-    }
-    return null;
-  }
-
-  function isSameMonthDay(d1, d2) {
-    if (!d1 || !d2) return false;
-    return (
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate()
-    );
-  }
-
-  function isSameDate(d1, d2) {
-    if (!d1 || !d2) return false;
-    return (
-        d1.getFullYear() === d2.getFullYear() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate()
-    );
-  }
-
   function addMonths(date, months) {
     var d = new Date(date);
     var day = d.getDate();
     d.setMonth(d.getMonth() + months);
-
-    // Handle month rollover (e.g., Jan 31 → Feb)
     if (d.getDate() < day) {
       d.setDate(0);
     }
-    return d;
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
   if (start === 1) {
@@ -198,29 +143,30 @@ function sendReminders(batchStart) {
     var tzCell = escapeHtml(row[timezoneCol]);
     var notes = escapeHtml(row[notesCol]);
 
-    var birthday = parseSheetDate(row[birthdayCol]);
-    var anniversary = parseSheetDate(row[anniversaryCol]);
-    var lastInteraction = parseSheetDate(row[lastInteractionCol]);
+    var birthday = row[birthdayCol] instanceof Date ? new Date(row[birthdayCol]) : null;
+    var anniversary = row[anniversaryCol] instanceof Date ? new Date(row[anniversaryCol]) : null;
+    var lastInteraction = row[lastInteractionCol] instanceof Date ? new Date(row[lastInteractionCol]) : null;
     var touchIntervalQuarter = parseInt(row[touchIntervalCol], 10);
 
     var triggers = [];
 
     if (!name && !email && !phone) continue;
 
-    if (isSameMonthDay(today, birthday)) {
+    if (birthday &&
+        birthday.getMonth() === todayMonth &&
+        birthday.getDate() === todayDate) {
       triggers.push("Birthday");
     }
 
-    if (isSameMonthDay(today, anniversary)) {
+    if (anniversary &&
+        anniversary.getMonth() === todayMonth &&
+        anniversary.getDate() === todayDate) {
       triggers.push("Anniversary");
     }
 
     if (lastInteraction && touchIntervalQuarter) {
-      var nextTouch = addMonths(
-          lastInteraction,
-          touchIntervalQuarter * 3
-      );
-      if (isSameDate(today, nextTouch)) {
+      var nextTouch = addMonths(lastInteraction, touchIntervalQuarter * 3);
+      if (nextTouch.getTime() === todayFull.getTime()) {
         triggers.push("Touch Interval");
       }
     }
@@ -301,15 +247,10 @@ function setupDailyTrigger() {
       .timeBased()
       .everyDays(1)
       .atHour(hour)
-      .inTimezone(SpreadsheetApp.getActive().getSpreadsheetTimeZone())
       .create();
 
   SpreadsheetApp.getActiveSpreadsheet().toast(
-      "Daily reminder set for " +
-      hour +
-      ":00 (" +
-      SpreadsheetApp.getActive().getSpreadsheetTimeZone() +
-      ")"
+      "Daily reminder set for " + hour + ":00"
   );
 }
 
