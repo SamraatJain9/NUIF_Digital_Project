@@ -201,7 +201,7 @@ function sendReminders(batchStart) {
     var allRows = JSON.parse(cache.get("reminderRows") || "[]");
     cache.remove("reminderRows");
 
-    if (allRows.length > 1) {
+    if (allRows.length >= 1) {
       var htmlBody =
           "<html><body>" +
           "<table border='1' cellpadding='5' cellspacing='0' " +
