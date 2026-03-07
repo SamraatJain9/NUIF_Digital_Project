@@ -29,7 +29,7 @@ function setupSheet() {
     "Holidays",
     "Last Interaction",
     "Last Meeting",
-    "Touch Interval (Quater)",
+    "Touch Interval (Quarter)",
     "Last Conversation Notes",
     "Anniversary",
     "",
@@ -116,7 +116,7 @@ function sendReminders(batchStart) {
   var birthdayCol = headers.indexOf("Birthday");
   var anniversaryCol = headers.indexOf("Anniversary");
   var lastInteractionCol = headers.indexOf("Last Interaction");
-  var touchIntervalCol = headers.indexOf("Touch Interval (Quater)");
+  var touchIntervalCol = headers.indexOf("Touch Interval (Quarter)");
 
   var rows = [];
   var batchSize = 900;
