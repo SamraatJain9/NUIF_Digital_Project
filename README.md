@@ -1,12 +1,11 @@
 # NUIF Digital Projects
 
-# Personal Networking System - Google Sheets Automated Reminders
-
-This repository contains a Google Apps Script file to automate contact management and reminder emails in a Google Sheet: **personal_networking.js**.
+# HNM - Human Network Maintainer
+This repository contains a Google Apps Script file to automate contact management and reminder emails in a Google Sheet: **hnm.js**.
 
 ---
 
-## Personal_networking.js
+## hnm.js
 
 **Purpose:**  
 This script powers a personal networking workflow in Google Sheets by:
