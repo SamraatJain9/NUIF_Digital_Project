@@ -1,82 +1,62 @@
 # NUIF Digital Projects
 
-# Rolodex Reminders - Google Sheets Automation
-
-This repository contains two Google Apps Script files to automate reminders for contacts in a Google Sheet:
-
-1. **rolodex.js** – Handles sending automated reminders for birthdays, anniversaries, and touch intervals.
-2. **sheetSetup.js** – Provides a one-click setup for the Google Sheet, creating and formatting all required columns.
+# HNM - Human Network Maintainer
+This repository contains a Google Apps Script file to automate contact management and reminder emails in a Google Sheet: **hnm.js**.
 
 ---
 
-## 1. rolodex.js
+## hnm.js
 
 **Purpose:**  
-This script scans your contact sheet and sends reminder emails based on the following triggers:
+This script powers a personal networking workflow in Google Sheets by:
 
-- **Birthday** – Matches contacts whose birthday falls on the current day.
-- **Anniversary** – Matches contacts whose anniversary falls on the current day.
-- **Touch Interval** – Matches contacts whose last interaction plus the touch interval (in quarters) falls on the current day.
+- Creating and formatting a standard contact sheet layout.
+- Tracking key reminder triggers (birthdays, anniversaries, and follow-up intervals).
+- Sending a daily email digest of contacts that need attention.
+- Providing menu actions to run reminders and manage automation.
+
+**Columns Created (A -> Q):**
+
+| Name | Email | Phone Number | LinkedIn | Company | Title | Industry | Country of Residence | Religion | Birthday | Holidays | Last Meeting | Contact Interval | Anniversary | (empty) | Recipient Email | Trigger hour (0-23) |
+|------|-------|--------------|----------|---------|-------|----------|----------------------|----------|----------|----------|--------------|------------------|-------------|--------|-----------------|---------------------|
 
 **Features:**
 
-- Supports batching for large sheets (up to 900 rows per batch).
-- Handles timezone correctly using the spreadsheet’s timezone.
-- Sends a single email with all reminders in a formatted table.
-- Daily automated trigger can be configured via `setupDailyTrigger()`.
-- Includes a menu in Google Sheets for manual execution (`Run reminders now`) or trigger setup.
+- `setupSheet()`:
+  - Creates required headers and formatting (bold white text, blue background, central alignment).
+  - Freezes row 1 and applies consistent column widths.
+  - Applies date formatting to Birthday, Last Meeting, and Anniversary columns.
+  - Adds dropdown validation for Contact Interval.
+  - Sets defaults for Recipient Email (P2) and Trigger Hour (Q2).
+- `sendReminders()`:
+  - Scans all contact rows.
+  - Detects today's Birthday and Anniversary matches.
+  - Detects Follow up reminders from Last Meeting + Contact Interval.
+  - Sends one HTML table email digest via `MailApp.sendEmail`.
+- `setupDailyTrigger()`:
+  - Reads trigger hour from Q2.
+  - Replaces old `sendReminders` triggers.
+  - Creates a daily time-based trigger.
+- `removeAllTriggers()`:
+  - Deletes all project triggers.
+- `onOpen()`:
+  - Adds **Setup** and **Reminders** menus to the Google Sheet UI.
 
 **Usage:**
 
-1. Paste `rolodex.js` into the Apps Script editor attached to your Google Sheet.
-2. Reload the sheet. You will see a **🔔 Reminders** menu.
-3. Optionally, run **Set up daily trigger** to send reminders automatically every day.
-4. Run **Run reminders now** for immediate testing.
-
----
-
-## 2. sheetSetup.js
-
-**Purpose:**  
-Sets up a new Google Sheet with all required columns in the correct order, pre-filled defaults, and formatted headers. This allows users to start using `rolodex.js` without manually configuring the sheet.
-
-**Columns Created (A → U):**
-
-| Name | Email | Phone Number | LinkedIn | Company | Title | Industry | Country of Residence | City | Timezone | Religion | Birthday | Holidays | Last Interaction | Last Meeting | Touch Interval (Quater) | Last Conversation Notes | Anniversary | (empty) | Recipient Email | Trigger hour (0–23) |
-|------|-------|--------------|----------|---------|-------|----------|--------------------|------|----------|---------|---------|---------|-----------------|--------------|------------------------|------------------------|------------|--------|----------------|--------------------|
-
-**Features:**
-
-- Creates and formats the header row:
-  - Navy blue background
-  - White bold text
-  - Centered alignment
-- Freezes the header row
-- Sets default **Recipient Email** (T2) and **Trigger Hour** (U2)
-- Resizes columns for better readability
-
-**Usage:**
-
-1. Paste `sheetSetup.js` into the Apps Script editor attached to your Google Sheet.
-2. Add the following `onOpen()` function to show a menu button:
-
-```javascript
-function onOpen() {
-  SpreadsheetApp.getUi()
-    .createMenu("🔔 Reminders")
-    .addItem("Setup sheet", "setupSheet")
-    .addToUi();
-}
-```
-3. Reload the Google Sheet.
-4. Click 🔔 Reminders → Setup sheet to create and format all columns.
-5. The sheet is now ready for use with rolodex.js.
+1. Open your Google Sheet and go to **Extensions -> Apps Script**.
+2. Paste `personal_networking.js` into the editor and save.
+3. Reload the spreadsheet.
+4. From **Setup -> Setup sheet**, initialize the sheet structure.
+5. Optionally run **Reminders -> Set daily reminder** to automate notifications.
+6. Use **Reminders -> Run reminders now** to test immediately.
 
 **Notes**
 
-- The scripts rely on the spreadsheet timezone to determine “today,” so all triggers and date calculations are consistent regardless of the user’s local timezone.
-- rolodex.js is safe for large datasets due to batching and caching.
-- sheetSetup.js is idempotent: running it multiple times will overwrite the header row without affecting existing data below row 1.
+- Reminder matching is based on current day/month checks for date triggers.
+- Follow-up reminders depend on valid values in **Last Meeting** and **Contact Interval**.
+- If Q2 is empty or invalid, daily reminders default to hour `9` (09:00).
+- Running setup multiple times rewrites headers/formatting but preserves data rows below row 1.
 
 ### Authors
 [Samraat Jain](https://github.com/SamraatJain9), [James Delin](https://github.com/jd-0001), [Sarah Rafiepour](https://github.com/sarahr15), [Ryan Duong](https://github.com/RyanDuong0), [Shalom Ademuwagun](https://github.com/ChachyDev)
